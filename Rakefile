@@ -1,8 +1,8 @@
 # For Bundler.with_clean_env
 require 'bundler/setup'
 
-PACKAGE_NAME = "hello"
-VERSION = "1.0.0"
+PACKAGE_NAME = "foliator"
+VERSION = "0.0.1"
 TRAVELING_RUBY_VERSION = "20150715-2.2.2"
 SQLITE3_VERSION = "1.3.9"  # Must match Gemfile
 
@@ -85,10 +85,10 @@ def create_package(target)
   sh "rm -rf #{package_dir}"
   sh "mkdir #{package_dir}"
   sh "mkdir -p #{package_dir}/lib/app"
-  sh "cp hello.rb #{package_dir}/lib/app/"
+  sh "cp foliator.rb #{package_dir}/lib/app/"
   sh "mkdir #{package_dir}/lib/ruby"
   sh "tar -xzf packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-#{target}.tar.gz -C #{package_dir}/lib/ruby"
-  sh "cp packaging/wrapper.sh #{package_dir}/hello"
+  sh "cp packaging/wrapper.sh #{package_dir}/foliator"
   sh "cp -pR packaging/vendor #{package_dir}/lib/"
   sh "cp Gemfile Gemfile.lock #{package_dir}/lib/vendor/"
   sh "mkdir #{package_dir}/lib/vendor/.bundle"
