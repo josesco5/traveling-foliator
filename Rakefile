@@ -3,7 +3,7 @@ require 'bundler/setup'
 
 PACKAGE_NAME = "hello"
 VERSION = "1.0.0"
-TRAVELING_RUBY_VERSION = "20150210-2.1.5"
+TRAVELING_RUBY_VERSION = "20150715-2.2.2"
 SQLITE3_VERSION = "1.3.9"  # Must match Gemfile
 
 desc "Package your app"
@@ -38,8 +38,8 @@ namespace :package do
 
   desc "Install gems to local directory"
   task :bundle_install do
-    if RUBY_VERSION !~ /^2\.1\./
-      abort "You can only 'bundle install' using Ruby 2.1, because that's what Traveling Ruby uses."
+    if RUBY_VERSION !~ /^2\.2\./
+      abort "You can only 'bundle install' using Ruby 2.2, because that's what Traveling Ruby uses."
     end
     sh "rm -rf packaging/tmp"
     sh "mkdir packaging/tmp"
