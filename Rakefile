@@ -5,7 +5,6 @@ PACKAGE_NAME = "foliator"
 VERSION = "0.0.1"
 TRAVELING_RUBY_VERSION = "20150715-2.2.2"
 JSON_VERSION = "1.8.2"  # Must match Gemfile
-SQLITE3_VERSION = "1.3.9"  # Must match Gemfile
 
 desc "Package your app"
 task :package => ['package:linux:x86', 'package:linux:x86_64', 'package:osx']
@@ -15,7 +14,6 @@ namespace :package do
     desc "Package your app for Linux x86"
     task :x86 => [:bundle_install,
       "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86.tar.gz",
-      "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86-sqlite3-#{SQLITE3_VERSION}.tar.gz",
       "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86-json-#{JSON_VERSION}.tar.gz"
     ] do
       create_package("linux-x86")
@@ -24,7 +22,6 @@ namespace :package do
     desc "Package your app for Linux x86_64"
     task :x86_64 => [:bundle_install,
       "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86_64.tar.gz",
-      "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86_64-sqlite3-#{SQLITE3_VERSION}.tar.gz",
       "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86_64-json-#{JSON_VERSION}.tar.gz"
     ] do
       create_package("linux-x86_64")
@@ -34,7 +31,6 @@ namespace :package do
   desc "Package your app for OS X"
   task :osx => [:bundle_install,
     "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-osx.tar.gz",
-    "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-osx-sqlite3-#{SQLITE3_VERSION}.tar.gz",
     "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-osx-json-#{JSON_VERSION}.tar.gz"
   ] do
     create_package("osx")
@@ -72,18 +68,6 @@ file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-osx.tar.gz" do
   download_runtime("osx")
 end
 
-file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86-sqlite3-#{SQLITE3_VERSION}.tar.gz" do
-  download_native_extension("linux-x86", "sqlite3-#{SQLITE3_VERSION}")
-end
-
-file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86_64-sqlite3-#{SQLITE3_VERSION}.tar.gz" do
-  download_native_extension("linux-x86_64", "sqlite3-#{SQLITE3_VERSION}")
-end
-
-file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-osx-sqlite3-#{SQLITE3_VERSION}.tar.gz" do
-  download_native_extension("osx", "sqlite3-#{SQLITE3_VERSION}")
-end
-
 file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86-json-#{JSON_VERSION}.tar.gz" do
   download_native_extension("linux-x86", "json-#{JSON_VERSION}")
 end
@@ -109,8 +93,6 @@ def create_package(target)
   sh "cp Gemfile Gemfile.lock #{package_dir}/lib/vendor/"
   sh "mkdir #{package_dir}/lib/vendor/.bundle"
   sh "cp packaging/bundler-config #{package_dir}/lib/vendor/.bundle/config"
-  sh "tar -xzf packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-#{target}-sqlite3-#{SQLITE3_VERSION}.tar.gz " +
-    "-C #{package_dir}/lib/vendor/ruby"
   sh "tar -xzf packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-#{target}-json-#{JSON_VERSION}.tar.gz " +
     "-C #{package_dir}/lib/vendor/ruby"
   if !ENV['DIR_ONLY']
