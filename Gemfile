@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'mime-types', '~> 3.1'
 gem 'json', '1.8.2'
 
 # To generate packaged version (Comment below)
