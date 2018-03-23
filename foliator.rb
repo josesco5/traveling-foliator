@@ -6,7 +6,7 @@ require 'uri'
 require 'mime/types'
 require 'net/http/post/multipart'
 
-def set_file_attachment attachment_url
+def set_file_attachment attachment_url, cookie
   puts "Setting attachment to document"
   puts attachment_url
 
@@ -15,13 +15,14 @@ def set_file_attachment attachment_url
   http.use_ssl = (url.scheme == "https")
 
   request = Net::HTTP::Get.new(url)
+  request['Cookie'] = cookie
 
   response = http.request(request)
   puts response.code
   puts response.body
 end
 
-def send_file_to_s3(file_path, s3_options)
+def send_file_to_s3(file_path, s3_options, cookie)
   puts "send_file_to_s3 multipart"
 
   key = s3_options[:key]
@@ -61,7 +62,7 @@ def send_file_to_s3(file_path, s3_options)
       puts 'File sent successfully to S3'
       attachment_url = response['Location']
 
-      set_file_attachment attachment_url
+      set_file_attachment attachment_url, cookie
     end
   end
 end
@@ -81,6 +82,7 @@ if ARGV.length > 0
   puts options
   file_options = options[:file]
   s3_options = options[:s3]
+  cookie = options[:cookie]
 
   file_url = file_options[:file_url]
   start_folio = file_options[:start_folio] || 1
@@ -102,7 +104,7 @@ if ARGV.length > 0
       temp_file_path = save_temp_pdf(foliated_pdf)
       puts temp_file_path
 
-      send_file_to_s3(temp_file_path, s3_options)
+      send_file_to_s3(temp_file_path, s3_options, cookie)
     else
       puts "File at #{file_url} could not be foliated"
     end
