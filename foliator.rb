@@ -22,7 +22,7 @@ def set_file_attachment attachment_url, cookie
   puts response.body
 end
 
-def send_file_to_s3(file_path, s3_options, cookie)
+def send_file_to_s3(file_path, file_name, s3_options, cookie)
   puts "send_file_to_s3 multipart"
 
   key = s3_options[:key]
@@ -33,7 +33,6 @@ def send_file_to_s3(file_path, s3_options, cookie)
   policy = s3_options[:policy]
   signature = s3_options[:signature]
 
-  filename = File.basename(file_path)
   mime_type = MIME::Types.type_for(file_path)
 
   params = {
@@ -45,7 +44,7 @@ def send_file_to_s3(file_path, s3_options, cookie)
     "success_action_redirect" => success_action_redirect,
     "Content-Type" => mime_type,
     "utf8" => "✓",
-    "file" => UploadIO.new(File.open(file_path), mime_type, filename)
+    "file" => UploadIO.new(File.open(file_path), mime_type, file_name)
   }
 
   url = URI.parse(direct_fog_url)
@@ -101,10 +100,11 @@ if ARGV.length > 0
     if foliated_pdf
       puts "File at #{file_url}. Pages of foliated document: #{foliated_pdf.pages.count}"
 
+      file_name = File.basename(file_url)
       temp_file_path = save_temp_pdf(foliated_pdf)
       puts temp_file_path
 
-      send_file_to_s3(temp_file_path, s3_options, cookie)
+      send_file_to_s3(temp_file_path, file_name, s3_options, cookie)
     else
       puts "File at #{file_url} could not be foliated"
     end
