@@ -6,6 +6,21 @@ require 'uri'
 require 'mime/types'
 require 'net/http/post/multipart'
 
+def set_file_attachment attachment_url
+  puts "Setting attachment to document"
+  puts attachment_url
+
+  url = URI.parse(attachment_url)
+  http = Net::HTTP.new(url.host, url.port)
+  http.use_ssl = (url.scheme == "https")
+
+  request = Net::HTTP::Get.new(url)
+
+  response = http.request(request)
+  puts response.code
+  puts response.body
+end
+
 def send_file_to_s3(file_path, s3_options)
   puts "send_file_to_s3 multipart"
 
@@ -41,6 +56,13 @@ def send_file_to_s3(file_path, s3_options)
 
     puts response.code
     puts response.body
+
+    if (response.code.to_i == 303)
+      puts 'File sent successfully to S3'
+      attachment_url = response['Location']
+
+      set_file_attachment attachment_url
+    end
   end
 end
 
