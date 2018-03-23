@@ -83,30 +83,32 @@ if ARGV.length > 0
   s3_options = options[:s3]
   cookie = options[:cookie]
 
-  file_url = file_options[:file_url]
-  start_folio = file_options[:start_folio] || 1
-  just_folios = file_options[:just_folios]
-  pixels_to_left = file_options[:pixels_to_left] || 0
-  double_sided = file_options[:double_sided]
-  every_other_page = file_options[:every_other_page]
-  stamp_url = file_options[:stamp_url]
-  issue_date = file_options[:issue_date]
+  if file_options && s3_options && cookie
+    file_url = file_options[:file_url]
+    start_folio = file_options[:start_folio] || 1
+    just_folios = file_options[:just_folios]
+    pixels_to_left = file_options[:pixels_to_left] || 0
+    double_sided = file_options[:double_sided]
+    every_other_page = file_options[:every_other_page]
+    stamp_url = file_options[:stamp_url]
+    issue_date = file_options[:issue_date]
 
-  if file_url
-    foliated_pdf = Document::Foliator.foliate_from_url(
-      file_url, start_folio, just_folios, pixels_to_left, double_sided,
-      every_other_page, stamp_url, issue_date
-    )
-    if foliated_pdf
-      puts "File at #{file_url}. Pages of foliated document: #{foliated_pdf.pages.count}"
+    if file_url
+      foliated_pdf = Document::Foliator.foliate_from_url(
+        file_url, start_folio, just_folios, pixels_to_left, double_sided,
+        every_other_page, stamp_url, issue_date
+      )
+      if foliated_pdf
+        puts "File at #{file_url}. Pages of foliated document: #{foliated_pdf.pages.count}"
 
-      file_name = File.basename(file_url)
-      temp_file_path = save_temp_pdf(foliated_pdf)
-      puts temp_file_path
+        file_name = File.basename(file_url)
+        temp_file_path = save_temp_pdf(foliated_pdf)
+        puts temp_file_path
 
-      send_file_to_s3(temp_file_path, file_name, s3_options, cookie)
-    else
-      puts "File at #{file_url} could not be foliated"
+        send_file_to_s3(temp_file_path, file_name, s3_options, cookie)
+      else
+        puts "File at #{file_url} could not be foliated"
+      end
     end
   end
 end
